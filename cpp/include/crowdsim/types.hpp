@@ -80,49 +80,49 @@ struct Wall {
     Vec2 b{};
 };
 
-float distance_to_segment(Vec2 p, Vec2 a, Vec2 b);
+float distance_to_segment(Vec2 p, Vec2 a, Vec2 b) {
+    float b_a_l_sq = (b - a).length_sq();
+    t = (p - a).dot(b - a);
+    if      (t <= 0) return (p-a).length();
+    else if (t >= 1) return (p-b).length();
+    else return ((b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)) / std::sqrt(b_a_l_sq);
+};
 
-// ---------------------------------------------------------------------------
-// Конфигурация
-// ---------------------------------------------------------------------------
 
-// Параметры Social Force Model (Helbing & Molnar, 1995).
+// Параметры Social Force Model
 struct SfmParams {
-    float tau    = 0.5f;   // время релаксации к желаемой скорости, с
-    float A_ped  = 2.0f;   // амплитуда отталкивания между пешеходами
-    float B_ped  = 0.3f;   // характерная дальность отталкивания, м
-    float A_wall = 10.0f;  // от стен отталкивает сильнее: в стену не вдавишься
+    float tau    = 0.5f;
+    float A_ped  = 2.0f;
+    float B_ped  = 0.3f;
+    float A_wall = 10.0f;
     float B_wall = 0.2f;
-    // Дальше cutoff сила меньше exp(-5) ~ 0.7% от A. Задаёт размер клетки grid.
     float cutoff = 1.5f;
 };
 
-// Ограничения привода робота. Одинаковы для всех миров, поэтому в конфиге,
-// а не в самой структуре Robot.
+
 struct RobotLimits {
-    float v_max     = 1.0f;   // м/с, вперёд
-    float v_min     = 0.0f;   // м/с, назад (0 = задний ход запрещён)
-    float omega_max = 1.0f;   // рад/с
+    float v_max     = 1.0f;
+    float v_min     = 0.0f;
+    float omega_max = 1.0f;
 };
 
-// Все поля со значениями по умолчанию: из Python можно будет менять один
-// параметр, не перечисляя остальные.
+
 struct WorldConfig {
     float dt = 0.1f;
 
-    int   num_pedestrians = 20;
-    float arena_half_w    = 10.0f;   // мир: [-half_w, half_w] x [-half_h, half_h]
-    float arena_half_h    = 10.0f;
+    int num_pedestrians = 20;
+    float arena_half_w = 10.0f;
+    float arena_half_h = 10.0f;
 
-    float ped_radius   = 0.3f;
-    float ped_v_pref   = 1.3f;
+    float ped_radius = 0.3f;
+    float ped_v_pref = 1.3f;
     float robot_radius = 0.3f;
 
-    int   max_steps      = 500;   // лимит шагов эпизода
-    float goal_tolerance = 0.3f;  // ближе этого к цели - считается достигнутой
+    int max_steps = 500;
+    float goal_tolerance = 0.3f;
 
     SfmParams   sfm{};
     RobotLimits robot{};
 };
 
-}  // namespace crowdsim
+}
